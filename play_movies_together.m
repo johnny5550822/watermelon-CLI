@@ -1,5 +1,5 @@
 %% GUI function to play two movies together; reference from videoCustomGUI Example
-function play_movies_together(movie1_title,movie2_title,dir)
+function play_movies_together(movie1_title,movie2_title,m1_heading,m2_heading,dir)
 
 %%
 % Initialize the video reader.
@@ -13,7 +13,7 @@ videoSrc2 = vision.VideoFileReader(t_file2, 'ImageColorSpace', 'Intensity');
 %% 
 % Create a figure window and two axes to display the input video and the
 % processed video.
-[hFig, hAxes] = createFigureAndAxes();
+[hFig, hAxes] = createFigureAndAxes(m1_heading,m2_heading);
 
 %%
 % Add buttons to control video playback.
@@ -34,7 +34,7 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
 
 %% Create Figure, Axes, Titles
 % Create a figure window and two axes with titles to display two videos.
-    function [hFig, hAxes] = createFigureAndAxes()
+    function [hFig, hAxes] = createFigureAndAxes(m1_heading,m2_heading)
 
         % Close figure opened by last run
         figTag = 'CVST_VideoOnAxis_9804532';
@@ -58,8 +58,8 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
                'position',[xpos, ypos, sz(2), sz(1)]);
 
         % Create axes and titles
-        hAxes.axis1 = createPanelAxisTitle(hFig,[0.1 0.2 0.36 0.6],'Video1');%[X Y W H]
-        hAxes.axis2 = createPanelAxisTitle(hFig,[0.5 0.2 0.36 0.6],'Video2');
+        hAxes.axis1 = createPanelAxisTitle(hFig,[0.1 0.2 0.36 0.6],m1_heading);%[X Y W H]
+        hAxes.axis2 = createPanelAxisTitle(hFig,[0.5 0.2 0.36 0.6],m2_heading);
     end
 
 %% Create Axis and Title
@@ -79,6 +79,7 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
         titlePos = [pos(1)+0.02 pos(2)+pos(3)+0.3 0.3 0.07];
         uicontrol('style','text',...
             'String', axisTitle,...
+            'FontSize', 30,...)
             'Units','Normalized',...
             'Parent',hFig,'Position', titlePos,...
             'BackgroundColor',get(hFig,'Color'));
@@ -90,13 +91,13 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
 
         % Play button with text Start/Pause/Continue
         uicontrol(hFig,'unit','pixel','style','pushbutton','string','Start',...
-                'position',[10 10 75 25], 'tag','PBButton123','callback',...
+                'fontSize',20,'position',[10 10 150 50], 'tag','PBButton123','callback',...
                 {@playCallback,videoSrc,videoSrc2,hAxes});
 
         % Exit button with text Exit
-        uicontrol(hFig,'unit','pixel','style','pushbutton','string','Exit',...
-                'position',[100 10 50 25],'callback', ...
-                {@exitCallback,videoSrc,videoSrc2,hFig});
+%         uicontrol(hFig,'unit','pixel','style','pushbutton','string','Exit',...
+%                 'fontSize',20,'position',[100 10 100 50],'callback', ...
+%                 {@exitCallback,videoSrc,videoSrc2,hFig});
     end     
 
 %% Play Button Callback
@@ -168,17 +169,17 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
 %         angle       = angle + 1;
     end
 
-%% Exit Button Callback
-% This callback function releases system objects and closes figure window.
-    function exitCallback(~,~,videoSrc,videoSrc2,hFig)
-        
-        % Close the video file
-        release(videoSrc); 
-        release(videoSrc2);
-        % Close the figure window
-        close(hFig);
-    end
-
-displayEndOfDemoMessage(mfilename)
+% %% Exit Button Callback
+% % This callback function releases system objects and closes figure window.
+%     function exitCallback(~,~,videoSrc,videoSrc2,hFig)
+%         
+%         % Close the video file
+%         release(videoSrc); 
+%         release(videoSrc2);
+%         % Close the figure window
+%         close(hFig);
+%     end
+% 
+% displayEndOfDemoMessage(mfilename)
 
 end
