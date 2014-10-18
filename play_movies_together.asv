@@ -105,9 +105,6 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
 % |showFrameOnAxis| is responsible for displaying a frame of the video on
 % user-defined axis. This function is defined in the file
 % <matlab:edit(fullfile(matlabroot,'toolbox','vision','visiondemos','showFrameOnAxis.m')) showFrameOnAxis.m>
-
-% The set up in this function such that the callback is keep repeating
-% if there are difference between videoSrc and videoSrc2
     function playCallback(hObject,~,videoSrc,videoSrc2,hAxes)
        try
             % Check the status of play button
