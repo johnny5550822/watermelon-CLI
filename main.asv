@@ -1,0 +1,18 @@
+% Main for watermelon-CLI project in 2014 inventathon
+
+clear all;
+clc;
+clear;
+
+dataDir = './data';
+resultsDir = 'Results';
+mkdir(resultsDir);
+
+%% baby data
+inFile = fullfile(dataDir,'baby.mp4');
+fprintf('Processing %s\n', inFile);
+amplify_spatial_lpyr_temporal_iir(inFile, resultsDir, 10, 16, 0.4, 0.05, 0.1);
+
+
+
+
