@@ -1,5 +1,5 @@
 %% GUI function to play two movies together; reference from videoCustomGUI Example
-function play_movies_together(movie1_title,movie2_title,m1_heading,m2_heading,dir)
+function play_movies_together(movie1_title,movie2_title,m1_heading,m2_heading,dir,fr)
 
 %%
 % Initialize the video reader.
@@ -14,17 +14,24 @@ videoSrc2 = vision.VideoFileReader(t_file2, 'ImageColorSpace', 'Intensity');
 % Create a figure window and two axes to display the input video and the
 % processed video.
 [hFig, hAxes] = createFigureAndAxes(m1_heading,m2_heading);
+% For the time label
+time_label_object = uicontrol('Style','text',...
+    'Position',[550 10 200 50],...
+    'String','0.00',...
+    'fontSize',35,...
+    'BackgroundColor',get(hFig,'Color'))
 
 %%
 % Add buttons to control video playback.
-insertButtons(hFig, hAxes, videoSrc, videoSrc2);
+insertButtons(hFig, hAxes, videoSrc, videoSrc2,time_label_object,fr);
 
 %% Result of Pressing the Start Button
 % Now that the GUI is constructed, we trigger the play callback which
 % contains the main video processing loop defined in the
 % |getAndProcessFrame| function listed below. If you prefer to click on the
 % |Start| button yourself, you can comment out the following line of code.
-playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
+        
+playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes, time_label_object,fr);
 
 %%
 % Note that each video frame is centered in the axis box. If the axis size
@@ -58,8 +65,8 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
                'position',[xpos, ypos, sz(2), sz(1)]);
 
         % Create axes and titles
-        hAxes.axis1 = createPanelAxisTitle(hFig,[0.1 0.2 0.36 0.6],m1_heading);%[X Y W H]
-        hAxes.axis2 = createPanelAxisTitle(hFig,[0.5 0.2 0.36 0.6],m2_heading);
+        hAxes.axis1 = createPanelAxisTitle(hFig,[0.025 0.15 0.45 0.7],m1_heading);%[X Y W H]
+        hAxes.axis2 = createPanelAxisTitle(hFig,[0.55 0.15 0.45 0.7],m2_heading);
     end
 
 %% Create Axis and Title
@@ -87,12 +94,12 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
 
 %% Insert Buttons
 % Insert buttons to play, pause the videos.
-    function insertButtons(hFig,hAxes,videoSrc, videoSrc2)
+    function insertButtons(hFig,hAxes,videoSrc, videoSrc2, time_label_object,fr)
 
         % Play button with text Start/Pause/Continue
         uicontrol(hFig,'unit','pixel','style','pushbutton','string','Start',...
                 'fontSize',20,'position',[10 10 150 50], 'tag','PBButton123','callback',...
-                {@playCallback,videoSrc,videoSrc2,hAxes});
+                {@playCallback,videoSrc,videoSrc2,hAxes,time_label_object,fr});
 
         % Exit button with text Exit
 %         uicontrol(hFig,'unit','pixel','style','pushbutton','string','Exit',...
@@ -109,7 +116,8 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
 
 % The set up in this function such that the callback is keep repeating
 % if there are difference between videoSrc and videoSrc2
-    function playCallback(hObject,~,videoSrc,videoSrc2,hAxes)
+    function playCallback(hObject,~,videoSrc,videoSrc2,hAxes,time_label_object,fr)
+        time_counter = 1;   % for time calcuation
        try
             % Check the status of play button
             isTextStart = strcmp(get(hObject,'string'),'Start');
@@ -117,9 +125,10 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
             if isTextStart
                % Two cases: (1) starting first time, or (2) restarting 
                % Start from first frame
-               if isDone(videoSrc) || isDone(videoSrc)
+               if isDone(videoSrc) || isDone(videoSrc2)
                   reset(videoSrc);
                   reset(videoSrc2);
+                  time_counter=1;
                end
             end
             if (isTextStart || isTextCont)
@@ -130,16 +139,25 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
 
             % Rotate input video frame and display original and rotated
             % frames on figure
-            angle = 0;            
-            while strcmp(get(hObject,'string'),'Pause') && (~isDone(videoSrc) || ~isDone(videoSrc2))   
+            angle = 0;        
+            while strcmp(get(hObject,'string'),'Pause') && (~isDone(videoSrc2))   
                 % Get input video frame and rotated frame
+                videoSrc
                 [frame,angle] = getAndProcessFrame(videoSrc,angle); 
                 [frame2,angle] = getAndProcessFrame(videoSrc2,angle);
                 % Display input video frame on axis
                 showFrameOnAxis(hAxes.axis1, frame);
                 % Display rotated video frame on axis
                 % showFrameOnAxis(hAxes.axis2, rotatedImg); 
-                showFrameOnAxis(hAxes.axis2, frame2);   
+                showFrameOnAxis(hAxes.axis2, frame2);
+                
+                %Update the time labels
+                time_second = time_counter/fr;
+                time_second_string = sprintf('%4.2f s',time_second)
+                set(time_label_object,'string',time_second_string);
+                
+                % update counter
+                time_counter=time_counter+1;
             end
 
             % When video reaches the end of file, display "Start" on the
@@ -162,7 +180,6 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
         
         % Read input video frame
         frame = step(videoSrc);
-        
         % Apply any other preprocessing, for example, rotation
 %         paddedFrame = padarray(frame, [30 30], 0, 'both');
 %         rotatedImg  = imrotate(paddedFrame, angle, 'bilinear', 'crop');

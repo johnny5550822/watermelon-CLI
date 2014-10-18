@@ -68,9 +68,16 @@ clc;
 movie1_title = 'baby.mp4';
 movie2_title = 'baby-iir-r1-0.4-r2-0.05-alpha-10-lambda_c-16-chromAtn-0.1.avi';
 m1_heading = 'Original';
-m2_heading = 'Eulearn';
+m2_heading = 'Eulerian';
 dir = 'C:/Users/King Chung Ho/Dropbox/ucla inventathon/2014/code/data/';
-play_movies_together(movie1_title,movie2_title,m1_heading,m2_heading,dir);
+
+%Get movie info before playing it
+vid = fullfile(dataDir,'baby.mp4');
+vid = VideoReader(vid)
+fr = vid.FrameRate %30 frame per second
+
+% Play the movies
+play_movies_together(movie1_title,movie2_title,m1_heading,m2_heading,dir,fr);
 
 %%
 
