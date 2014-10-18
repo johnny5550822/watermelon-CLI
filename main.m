@@ -79,5 +79,40 @@ fr = vid.FrameRate %30 frame per second
 % Play the movies
 play_movies_together(movie1_title,movie2_title,m1_heading,m2_heading,dir,fr);
 
-%%
+%% Show 1: Baseline feet (normal) vs Eulerian feet (normal)
+%
+% Play the GUI
+clc;
+movie1_title = 'footBaseline1.mp4';
+movie2_title = 'footBaseline1-ideal-from-1.0833-to-1.25-alpha-250-level-4-chromAtn-1.avi';
+m1_heading = 'Feet(normal)';
+m2_heading = 'Eulerian feet';
+dir = 'C:/Users/King Chung Ho/Dropbox/ucla inventathon/2014/code/data/';
+
+%Get movie info before playing it
+vid = fullfile(dataDir,movie1_title);
+vid = VideoReader(vid)
+fr = vid.FrameRate %30 frame per second
+
+% Play the movies
+play_movies_together(movie1_title,movie2_title,m1_heading,m2_heading,dir,fr);
+
+%% Show 2: Eulerian feet (noraml) vs Eulerian feet(Ischemia)
+%
+% Play the GUI
+clc;
+movie1_title = 'footBaseline1-ideal-from-1.0833-to-1.25-alpha-250-level-4-chromAtn-1.avi';
+movie2_title = 'footIschemia1-ideal-from-1.0833-to-1.25-alpha-250-level-4-chromAtn-1.avi';
+m1_heading = 'Feet(Normal)';
+m2_heading = 'Feet(Ischemia)';
+dir = 'C:/Users/King Chung Ho/Dropbox/ucla inventathon/2014/code/data/';
+
+%Get movie info before playing it
+vid = fullfile(dataDir,movie1_title);
+vid = VideoReader(vid)
+fr = vid.FrameRate %30 frame per second
+
+% Play the movies
+play_movies_together(movie1_title,movie2_title,m1_heading,m2_heading,dir,fr);
+
 

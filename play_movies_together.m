@@ -75,7 +75,8 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes, time_labe
     function hAxis = createPanelAxisTitle(hFig, pos, axisTitle)
 
         % Create panel
-        hPanel = uipanel('parent',hFig,'Position',pos,'Units','Normalized');
+        hPanel = uipanel('parent',hFig,'Position',pos,'Units','Normalized', ...
+            'BackgroundColor',get(hFig,'Color'));
 
         % Create axis   
         hAxis = axes('position',[0 0 1 1],'Parent',hPanel); 
@@ -180,6 +181,7 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes, time_labe
         
         % Read input video frame
         frame = step(videoSrc);
+        frame = imresize(frame,0.5); %resize to fit the window
         % Apply any other preprocessing, for example, rotation
 %         paddedFrame = padarray(frame, [30 30], 0, 'both');
 %         rotatedImg  = imrotate(paddedFrame, angle, 'bilinear', 'crop');
