@@ -14,6 +14,7 @@
 % Date: June 2012
 %
 function filtered = ideal_bandpassing(input, dim, wl, wh, samplingRate)
+    size(input)
 
     if (dim > size(size(input),2))
         error('Exceed maximum dimension');

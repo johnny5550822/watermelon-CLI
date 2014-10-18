@@ -1,4 +1,12 @@
-% Main for watermelon-CLI project in 2014 inventathon
+%% Main for watermelon-CLI project in 2014 inventathon
+
+%Goal: to implement an instance view to change several parametrs of
+%Eulerian Video Magnification so that a better cantrol of parameters optimziation can be obtained.
+% Paramerters:
+% - Amplification
+% - low cut-off
+% - high cut-off
+%%
 
 clear all;
 clc;
@@ -20,6 +28,7 @@ amplify_spatial_lpyr_temporal_iir(inFile, resultsDir, 10, 16, 0.4, 0.05, 0.1);
 %vidFile, resultsDir, alpha, lambda_c, r1, r2, chromAttenuation
 
 %% hand vessele visualization
+clc;
 inFile = fullfile(dataDir,'wrist.mp4');
 fprintf('Processing %s\n', inFile);
 amplify_spatial_Gdown_temporal_ideal(inFile,resultsDir,50,4, 50/60,60/60,30, 1);
@@ -32,3 +41,30 @@ amplify_spatial_Gdown_temporal_ideal(inFile,resultsDir,50,4, 50/60,60/60,30, 1);
 % fh = 60/60    % high frequency of filter
 % samplingRate = 30 % frame rate
 % chromAttenuation = 1
+%% #######################Beginning of the view
+%%
+
+clear all;
+clc;
+clear;
+
+dataDir = './data';
+resultsDir = 'Results';
+%mkdir(resultsDir);
+startIndex = 1;
+
+% open the file
+vid = fullfile(dataDir,'baby.mp4');
+fprintf('Processing %s\n', vid);
+
+% Get the videos info
+vid = VideoReader(vid)
+fr = vid.FrameRate; %30 frame per second
+len = vid.NumberOfFrames;   %301 frames
+
+%%
+% Play the GUI
+clc;
+frames_title = 'baby.mp4';
+dir = 'C:/Users/King Chung Ho/Dropbox/ucla inventathon/2014/code/data/';
+play_movies_together(frames_title,dir);

@@ -26,7 +26,8 @@ function amplify_spatial_Gdown_temporal_ideal(vidFile,outDir,alpha,level, ...
 
 
     % Read video
-    vid = VideoReader(vidFile);
+    vid = VideoReader(vidFile)
+    
     % Extract video info
     vidHeight = vid.Height;
     vidWidth = vid.Width;
@@ -48,8 +49,7 @@ function amplify_spatial_Gdown_temporal_ideal(vidFile,outDir,alpha,level, ...
     disp('Spatial filtering...')
     Gdown_stack = build_GDown_stack(vidFile, startIndex, endIndex, level);
     disp('Finished')
-    
-    
+        
     % Temporal filtering
     disp('Temporal filtering...')
     filtered_stack = ideal_bandpassing(Gdown_stack, 1, fl, fh, samplingRate);
