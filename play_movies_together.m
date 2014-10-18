@@ -1,10 +1,14 @@
-%% GUI function to play the movies together; reference from videoCustomGUI Example
-function play_movies_together(frames_title,dir)
+%% GUI function to play two movies together; reference from videoCustomGUI Example
+function play_movies_together(movie1_title,movie2_title,dir)
 
 %%
 % Initialize the video reader.
-t_file = strcat(dir,frames_title)
+t_file = strcat(dir,movie1_title);
+t_file2 = strcat(dir,movie2_title);
 videoSrc = vision.VideoFileReader(t_file, 'ImageColorSpace', 'Intensity');
+videoSrc2 = vision.VideoFileReader(t_file2, 'ImageColorSpace', 'Intensity');
+
+
 
 %% 
 % Create a figure window and two axes to display the input video and the
@@ -13,14 +17,14 @@ videoSrc = vision.VideoFileReader(t_file, 'ImageColorSpace', 'Intensity');
 
 %%
 % Add buttons to control video playback.
-insertButtons(hFig, hAxes, videoSrc);
+insertButtons(hFig, hAxes, videoSrc, videoSrc2);
 
 %% Result of Pressing the Start Button
 % Now that the GUI is constructed, we trigger the play callback which
 % contains the main video processing loop defined in the
 % |getAndProcessFrame| function listed below. If you prefer to click on the
 % |Start| button yourself, you can comment out the following line of code.
-playCallback(findobj('tag','PBButton123'),[],videoSrc,hAxes);
+playCallback(findobj('tag','PBButton123'),[],videoSrc,videoSrc2,hAxes);
 
 %%
 % Note that each video frame is centered in the axis box. If the axis size
@@ -35,6 +39,13 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,hAxes);
         % Close figure opened by last run
         figTag = 'CVST_VideoOnAxis_9804532';
         close(findobj('tag',figTag));
+        
+        % center screen in the center
+        screensize = get(0,'ScreenSize');
+        sz = [screensize(4)-100 screensize(3)-100]; %figure size
+        xpos = ceil((screensize(3)-sz(2))/2); 
+        ypos = ceil((screensize(4)-sz(1))/2);
+
 
         % Create new figure
         hFig = figure('numbertitle', 'off', ...
@@ -44,7 +55,7 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,hAxes);
                'resize', 'on', ...
                'tag',figTag, ...
                'renderer','painters', ...
-               'position',[680 678 480 240]);
+               'position',[xpos, ypos, sz(2), sz(1)]);
 
         % Create axes and titles
         hAxes.axis1 = createPanelAxisTitle(hFig,[0.1 0.2 0.36 0.6],'Original Video');%[X Y W H]
@@ -75,17 +86,17 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,hAxes);
 
 %% Insert Buttons
 % Insert buttons to play, pause the videos.
-    function insertButtons(hFig,hAxes,videoSrc)
+    function insertButtons(hFig,hAxes,videoSrc, videoSrc2)
 
         % Play button with text Start/Pause/Continue
         uicontrol(hFig,'unit','pixel','style','pushbutton','string','Start',...
                 'position',[10 10 75 25], 'tag','PBButton123','callback',...
-                {@playCallback,videoSrc,hAxes});
+                {@playCallback,videoSrc,videoSrc2,hAxes});
 
         % Exit button with text Exit
         uicontrol(hFig,'unit','pixel','style','pushbutton','string','Exit',...
                 'position',[100 10 50 25],'callback', ...
-                {@exitCallback,videoSrc,hFig});
+                {@exitCallback,videoSrc,videoSrc2,hFig});
     end     
 
 %% Play Button Callback
@@ -94,7 +105,7 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,hAxes);
 % |showFrameOnAxis| is responsible for displaying a frame of the video on
 % user-defined axis. This function is defined in the file
 % <matlab:edit(fullfile(matlabroot,'toolbox','vision','visiondemos','showFrameOnAxis.m')) showFrameOnAxis.m>
-    function playCallback(hObject,~,videoSrc,hAxes)
+    function playCallback(hObject,~,videoSrc,videoSrc2,hAxes)
        try
             % Check the status of play button
             isTextStart = strcmp(get(hObject,'string'),'Start');
@@ -104,6 +115,7 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,hAxes);
                % Start from first frame
                if isDone(videoSrc)
                   reset(videoSrc);
+                  reset(videoSrc2);
                end
             end
             if (isTextStart || isTextCont)
@@ -115,19 +127,20 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,hAxes);
             % Rotate input video frame and display original and rotated
             % frames on figure
             angle = 0;            
-            while strcmp(get(hObject,'string'),'Pause') && ~isDone(videoSrc)  
+            while strcmp(get(hObject,'string'),'Pause') && ~isDone(videoSrc) && ~isDone(videoSrc2)   
                 % Get input video frame and rotated frame
-                [frame,rotatedImg,angle] = getAndProcessFrame(videoSrc,angle);                
+                [frame,angle] = getAndProcessFrame(videoSrc,angle); 
+                [frame2,angle] = getAndProcessFrame(videoSrc2,angle);
                 % Display input video frame on axis
                 showFrameOnAxis(hAxes.axis1, frame);
                 % Display rotated video frame on axis
                 % showFrameOnAxis(hAxes.axis2, rotatedImg); 
-                showFrameOnAxis(hAxes.axis2, frame);   
+                showFrameOnAxis(hAxes.axis2, frame2);   
             end
 
             % When video reaches the end of file, display "Start" on the
             % play button.
-            if isDone(videoSrc)
+            if isDone(videoSrc) && isDone(videoSrc2)
                set(hObject,'string','Start');
             end
        catch ME
@@ -138,26 +151,27 @@ playCallback(findobj('tag','PBButton123'),[],videoSrc,hAxes);
        end
     end
 
-%% Video Processing Algorithm
+%% Video Processing: Just read the image
 % This function defines the main algorithm that is invoked when play button
 % is activated.
-    function [frame,rotatedImg,angle] = getAndProcessFrame(videoSrc,angle)
+    function [frame,angle] = getAndProcessFrame(videoSrc,angle)
         
         % Read input video frame
         frame = step(videoSrc);
         
-        % Pad and rotate input video frame
-        paddedFrame = padarray(frame, [30 30], 0, 'both');
-        rotatedImg  = imrotate(paddedFrame, angle, 'bilinear', 'crop');
-        angle       = angle + 1;
+        % Apply any other preprocessing, for example, rotation
+%         paddedFrame = padarray(frame, [30 30], 0, 'both');
+%         rotatedImg  = imrotate(paddedFrame, angle, 'bilinear', 'crop');
+%         angle       = angle + 1;
     end
 
 %% Exit Button Callback
 % This callback function releases system objects and closes figure window.
-    function exitCallback(~,~,videoSrc,hFig)
+    function exitCallback(~,~,videoSrc,videoSrc2,hFig)
         
         % Close the video file
         release(videoSrc); 
+        release(videoSrc2);
         % Close the figure window
         close(hFig);
     end
