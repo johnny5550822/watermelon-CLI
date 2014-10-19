@@ -1,13 +1,8 @@
-%% Main for watermelon-CLI project in 2014 inventathon
+%% Demo for watermelon-CLI project in 2014 inventathon
 
-%Goal: to implement an instance view to change several parametrs of
-%Eulerian Video Magnification so that a better cantrol of parameters optimziation can be obtained.
-% Paramerters:
-% - Amplification
-% - low cut-off
-% - high cut-off
+%Goal: Demo code to show blood flow comaprison between healthy leg and
+%disease leg with and without Eulerian Video Magnification.
 %%
-
 clear all;
 clc;
 clear;
@@ -16,6 +11,7 @@ dataDir = './data';
 resultsDir = 'Results';
 mkdir(resultsDir);
 
+%% #################Experimental CODES############################################
 %% baby data
 inFile = fullfile(dataDir,'baby.mp4');
 fprintf('Processing %s\n', inFile);
@@ -41,9 +37,9 @@ amplify_spatial_Gdown_temporal_ideal(inFile,resultsDir,50,4, 50/60,60/60,30, 1);
 % fh = 60/60    % high frequency of filter
 % samplingRate = 30 % frame rate
 % chromAttenuation = 1
-%% #######################Beginning of the view
+%% ##################### DONE sample codes#######################################
+%% #######################Code beginning
 %%
-
 clear all;
 clc;
 clear;
@@ -62,24 +58,7 @@ vid = VideoReader(vid)
 fr = vid.FrameRate; %30 frame per second
 len = vid.NumberOfFrames;   %301 frames
 
-%%
-% Play the GUI
-clc;
-movie1_title = 'baby.mp4';
-movie2_title = 'baby-iir-r1-0.4-r2-0.05-alpha-10-lambda_c-16-chromAtn-0.1.avi';
-m1_heading = 'Original';
-m2_heading = 'Eulerian';
-dir = 'C:/Users/King Chung Ho/Dropbox/ucla inventathon/2014/code/data/';
-
-%Get movie info before playing it
-vid = fullfile(dataDir,'baby.mp4');
-vid = VideoReader(vid)
-fr = vid.FrameRate %30 frame per second
-
-% Play the movies
-play_movies_together(movie1_title,movie2_title,m1_heading,m2_heading,dir,fr);
-
-%% Show 1: Baseline feet (normal) vs Eulerian feet (normal)
+%% Demo 1: Baseline feet (normal) vs Eulerian feet (normal)
 %
 % Play the GUI
 clc;
@@ -97,7 +76,7 @@ fr = vid.FrameRate %30 frame per second
 % Play the movies
 play_movies_together(movie1_title,movie2_title,m1_heading,m2_heading,dir,fr);
 
-%% Show 2: Eulerian feet (noraml) vs Eulerian feet(Ischemia)
+%% Demo 2: Eulerian feet (noraml) vs Eulerian feet(Ischemia)
 %
 % Play the GUI
 clc;
