@@ -8,8 +8,6 @@ t_file2 = strcat(dir,movie2_title);
 videoSrc = vision.VideoFileReader(t_file, 'ImageColorSpace', 'Intensity');
 videoSrc2 = vision.VideoFileReader(t_file2, 'ImageColorSpace', 'Intensity');
 
-
-
 %% 
 % Create a figure window and two axes to display the input video and the
 % processed video.
